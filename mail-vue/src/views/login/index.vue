@@ -1,15 +1,32 @@
 <template>
   <div id="login-box" :style=" background ? 'background: var(--el-bg-color)' : ''" v-loading="oauthLoading" element-loading-text="登录中...">
-    <div id="background-wrap" v-if="!settingStore.settings.background">
-      <div class="x1 cloud"></div>
-      <div class="x2 cloud"></div>
-      <div class="x3 cloud"></div>
-      <div class="x4 cloud"></div>
-      <div class="x5 cloud"></div>
+    <div class="login-bg" v-if="!settingStore.settings.background">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+      <span class="grid-mask"></span>
     </div>
-    <div v-else :style="background"></div>
+    <div v-else class="login-bg" :style="background"></div>
+    <section class="brand-panel">
+      <div class="brand-mark">
+        <Icon icon="mingcute:mail-send-line" width="26" height="26"/>
+      </div>
+      <h1 class="brand-title">{{ settingStore.settings.title }}</h1>
+      <p class="brand-lead">一个后台，收好每个域名的每一封信。</p>
+      <ul class="domain-chips">
+        <li v-for="item in domainList" :key="item">{{ item }}</li>
+      </ul>
+      <ul class="brand-features">
+        <li><Icon icon="mingcute:inbox-line" width="18" height="18"/>多域名统一收件</li>
+        <li><Icon icon="mingcute:user-question-line" width="18" height="18"/>未知收件人自动归档</li>
+        <li><Icon icon="mingcute:code-line" width="18" height="18"/>开放 API，程序可直接读信</li>
+      </ul>
+    </section>
     <div class="form-wrapper">
       <div class="container">
+        <div class="form-mark">
+          <Icon icon="mingcute:mail-send-line" width="22" height="22"/>
+        </div>
         <span class="form-title">{{ settingStore.settings.title }}</span>
         <span class="form-desc" v-if="show === 'login'">{{ $t('loginTitle') }}</span>
         <span class="form-desc" v-else>{{ $t('regTitle') }}</span>
@@ -619,6 +636,17 @@ function submitRegister() {
 
 
 <style>
+html.dark #login-box {
+  --login-ink: #e2e8f0;
+  --login-muted: #94a3b8;
+  --login-chip-bg: rgba(30, 41, 59, 0.6);
+  --login-chip-border: rgba(148, 163, 184, 0.16);
+  --login-card-border: rgba(148, 163, 184, 0.14);
+  --login-card-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+  --login-base: #0b1020;
+  --login-grid: rgba(148, 163, 184, 0.06);
+}
+
 .el-select-dropdown__item {
   padding: 0 15px;
 }
@@ -632,60 +660,284 @@ function submitRegister() {
 
 <style lang="scss" scoped>
 
-.form-wrapper {
-  position: fixed;
-  right: 0;
+#login-box {
+  --login-accent: #2563eb;
+  --login-accent-2: #7c3aed;
+  --login-accent-3: #06b6d4;
+  --login-ink: #0f172a;
+  --login-muted: #475569;
+  --login-chip-bg: rgba(255, 255, 255, 0.62);
+  --login-chip-border: rgba(15, 23, 42, 0.08);
+  --login-card-border: rgba(15, 23, 42, 0.08);
+  --login-card-shadow: 0 24px 60px -20px rgba(30, 41, 59, 0.28), 0 2px 6px rgba(30, 41, 59, 0.06);
+  --login-base: #f5f7ff;
+  --login-grid: rgba(15, 23, 42, 0.05);
+  position: relative;
   height: 100%;
-  z-index: 10;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 520px);
+  align-items: center;
+  background: var(--login-base);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  @media (max-width: 1024px) {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+  }
+  @media (max-width: 767px) {
+    box-sizing: border-box;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    padding: 32px 16px;
+    gap: 20px;
+  }
+}
+
+.login-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  animation: drift 22s ease-in-out infinite alternate;
+}
+
+.b1 {
+  width: 46vw;
+  height: 46vw;
+  left: -10vw;
+  top: -12vw;
+  background: var(--login-accent);
+}
+
+.b2 {
+  width: 36vw;
+  height: 36vw;
+  left: 30vw;
+  bottom: -14vw;
+  background: var(--login-accent-2);
+  animation-duration: 28s;
+}
+
+.b3 {
+  width: 26vw;
+  height: 26vw;
+  right: 4vw;
+  top: 8vh;
+  background: var(--login-accent-3);
+  opacity: 0.35;
+  animation-duration: 32s;
+}
+
+.grid-mask {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--login-grid) 1px, transparent 1px),
+  linear-gradient(90deg, var(--login-grid) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at 30% 40%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 20%, transparent 75%);
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(4vw, 3vh, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation: none;
+  }
+}
+
+.brand-panel {
+  position: relative;
+  z-index: 1;
+  padding: 0 6vw 0 8vw;
+  color: var(--login-ink);
+  @media (max-width: 767px) {
+    padding: 0;
+    .brand-mark, .brand-title, .brand-lead, .brand-features {
+      display: none;
+    }
+    .domain-chips {
+      justify-content: center;
+      margin: 0;
+    }
+  }
+}
+
+.brand-mark, .form-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--login-accent), var(--login-accent-2));
+  box-shadow: 0 10px 24px -8px var(--login-accent);
+}
+
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  margin-bottom: 28px;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(120deg, var(--login-ink) 30%, var(--login-accent) 75%, var(--login-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-lead {
+  margin: 18px 0 26px;
+  max-width: 30em;
+  font-size: 17px;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--login-muted);
+}
+
+.domain-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 30px;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--login-ink);
+    background: var(--login-chip-bg);
+    border: 1px solid var(--login-chip-border);
+    backdrop-filter: blur(8px);
+  }
+}
+
+.brand-features {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--login-muted);
+  font-size: 15px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  svg {
+    color: var(--login-accent);
+  }
+}
+
+.form-wrapper {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px 48px 24px 0;
+  @media (max-width: 1024px) {
+    padding-right: 32px;
+  }
   @media (max-width: 767px) {
-    width: 100%;
+    padding: 0;
   }
 }
 
 .container {
+  box-sizing: border-box;
   background: v-bind(loginOpacity);
-  padding-left: 40px;
-  padding-right: 40px;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 450px;
-  height: 100%;
-  border-left: 1px solid var(--login-border);
-  box-shadow: var(--el-box-shadow-light);
-  @media (max-width: 1024px) {
-    padding: 20px 18px;
-    width: 384px;
-    margin-left: 18px;
-  }
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 34px 30px;
+  border-radius: 18px;
+  border: 1px solid var(--login-card-border);
+  box-shadow: var(--login-card-shadow);
   @media (max-width: 767px) {
-    border: 1px solid var(--login-border);
-    padding: 20px 18px;
-    border-radius: 6px;
-    height: fit-content;
-    width: 100%;
-    margin-right: 18px;
-    margin-left: 18px;
+    padding: 28px 20px 22px;
+    border-radius: 16px;
+  }
+
+  .form-mark {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    margin-bottom: 18px;
+    @media (max-width: 767px) {
+      display: inline-flex;
+    }
   }
 
   .btn {
-    height: 36px;
+    height: 42px;
     width: 100%;
-    border-radius: 6px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .btn.el-button--primary {
+    border: none;
+    background: linear-gradient(135deg, var(--login-accent), var(--login-accent-2));
+    box-shadow: 0 10px 22px -10px var(--login-accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+    &:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px -10px var(--login-accent);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 
   .form-desc {
-    margin-top: 5px;
-    margin-bottom: 18px;
+    margin-top: 6px;
+    margin-bottom: 24px;
+    font-size: 14px;
     color: var(--form-desc-color);
   }
 
   .form-title {
-    font-weight: bold;
-    font-size: 22px !important;
+    font-weight: 700;
+    font-size: 24px !important;
+    letter-spacing: -0.01em;
+    color: var(--login-ink);
   }
 
   .switch {
@@ -699,22 +951,22 @@ function submitRegister() {
   }
 
   :deep(.el-input__wrapper) {
-    border-radius: 6px;
+    border-radius: 10px;
     background: var(--el-bg-color);
   }
 
   .email-input :deep(.el-input__wrapper) {
-    border-radius: 6px 0 0 6px;
+    border-radius: 10px 0 0 10px;
     background: var(--el-bg-color);
   }
 
   .el-input {
-    height: 38px;
+    height: 42px;
     width: 100%;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 
     :deep(.el-input__inner) {
-      height: 36px;
+      height: 40px;
     }
   }
 }
@@ -765,7 +1017,7 @@ function submitRegister() {
   padding-left: 8px !important;
   padding-right: 4px !important;
   background: var(--el-bg-color);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 10px 10px 0;
 }
 
 :deep(.el-button+.el-button) {
@@ -794,90 +1046,5 @@ function submitRegister() {
   width: 180px;
 }
 
-
-#login-box {
-  background: linear-gradient(to bottom, #2980b9, #6dd5fa, #fff);
-  font: 100% Arial, sans-serif;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
-
-#background-wrap {
-  height: 100%;
-  z-index: 0;
-}
-
-@keyframes animateCloud {
-  0% {
-    margin-left: -500px;
-  }
-
-  100% {
-    margin-left: 100%;
-  }
-}
-
-.x1 {
-  animation: animateCloud 30s linear infinite;
-  transform: scale(0.65);
-}
-
-.x2 {
-  animation: animateCloud 15s linear infinite;
-  transform: scale(0.3);
-}
-
-.x3 {
-  animation: animateCloud 25s linear infinite;
-  transform: scale(0.5);
-}
-
-.x4 {
-  animation: animateCloud 13s linear infinite;
-  transform: scale(0.4);
-}
-
-.x5 {
-  animation: animateCloud 20s linear infinite;
-  transform: scale(0.55);
-}
-
-.cloud {
-  background: linear-gradient(to bottom, #fff 5%, #f1f1f1 100%);
-  border-radius: 100px;
-  box-shadow: 0 8px 5px rgba(0, 0, 0, 0.1);
-  height: 120px;
-  width: 350px;
-  position: relative;
-}
-
-.cloud:after,
-.cloud:before {
-  content: "";
-  position: absolute;
-  background: #fff;
-  z-index: -1;
-}
-
-.cloud:after {
-  border-radius: 100px;
-  height: 100px;
-  left: 50px;
-  top: -50px;
-  width: 100px;
-}
-
-.cloud:before {
-  border-radius: 200px;
-  height: 180px;
-  width: 180px;
-  right: 50px;
-  top: -90px;
-}
 
 </style>
