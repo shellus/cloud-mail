@@ -95,6 +95,7 @@ const premKey = {
 app.use('*', async (c, next) => {
 
 	const path = c.req.path;
+	if (path === '/public/latest' || path === '/public/mailboxKeys') return await next();
 
 	const index = exclude.findIndex(item => {
 		return path.startsWith(item);
